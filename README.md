@@ -1,7 +1,7 @@
 # COBRA
 COBRA Repository for computing cosmological observables
 
-Currently supports: (i) linear power spectrum in LambdaCDM; (ii) linear power spectrum in extended parameter space including curvature, neutrinos, w0, wa; (iii) one-loop EPT resummed power spectrum of biased tracers in redshift space for LambdaCDM based on Chen, Vlah, White: https://arxiv.org/pdf/2005.00523. 
+Currently supports: (i) linear power spectrum in LambdaCDM; (ii) linear power spectrum in extended parameter space including curvature, neutrinos, $w_0$, wa; (iii) one-loop EPT resummed power spectrum of biased tracers in redshift space for LambdaCDM based on Chen, Vlah, White: https://arxiv.org/pdf/2005.00523. 
 
 By default, the code uses units of hfid/Mpc for wavenumbers, where hfid = 0.7 throughout. This means that you also get the power spectra in units of (Mpc/hfid)**3. If you want to change this to h/Mpc or 1/Mpc, set the 'units' keyword as desired when calling COBRA. The allowed ranges are given in units of hfid/Mpc and are [0.001,4] for (i), [0.001,1.5] for (ii) and [0.001,0.5] for (iii).   
 
