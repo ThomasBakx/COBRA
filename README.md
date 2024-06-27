@@ -12,4 +12,4 @@ For questions / issues please contact me at t.j.m.bakx@uu.nl.
 ## Credit
 
 These demonstration notebooks are released under a CC-BY 4.0 license: https://creativecommons.org/licenses/by/4.0/
-If you use the data, please cite the corresponding paper (arXiv number TBD)
+If you use this code, please cite the corresponding paper (arXiv number TBD)
