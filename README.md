@@ -8,3 +8,8 @@ By default, the code uses units of hfid/Mpc for wavenumbers, where $h^* = 0.7$ t
 All modules are vectorized, so you can feed L cosmologies at once by using L by D arrays, where D is the number of parameters per cosmology (D=3 for (i), D=9 for (ii), D=16 for (iii)). Due to memory constraints it is not advised to use L of more than a few hundred for cases (ii) and (iii), after which the speedup saturates anyways. You can only pass one value of comp_max at a time, and only one grid of output k-values. 
 
 For questions / issues please contact me at t.j.m.bakx@uu.nl.
+
+## Credit
+
+These demonstration notebooks are released under a CC-BY 4.0 license: https://creativecommons.org/licenses/by/4.0/
+If you use the data, please cite the corresponding paper (arXiv number TBD)
