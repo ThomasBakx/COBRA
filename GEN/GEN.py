@@ -95,6 +95,8 @@ class CobraGEN:
             alpha = 0.35
             if cosmo_keys_list != self.param_keys:
                 raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wp, z, As")
+        else:
+            raise ValueError(f'Unknown param_range {self.param_range}')
                 
         cosm_tot = np.array([val for val in cosmo.values()]).T
 
@@ -182,6 +184,8 @@ class CobraGEN:
             alpha = 0.35
             if n_basis > 16:
                 raise NBasisError("Can use at most 16 basis functions for this range")
+        else:
+            raise ValueError(f'Unknown param_range {self.param_range}')
 
         if k_out_hfid[-1] > k_lin_internal[-1] or k_out_hfid[0] < k_lin_internal[0]:
             raise KRangeError("Wavenumber out of bounds")
