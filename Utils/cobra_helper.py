@@ -54,6 +54,8 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
         n_basis_max = 12        
     elif param_range == 'ext':
         n_basis_max = 16
+    else:
+        raise ValueError(f'Unknown param_range {param_range}')
 
     k_s_table_loop = np.loadtxt("./" + space + "/Stables/" + param_range + "/gg1loop_" + w_nw + "_" + space + param_range + ".dat", unpack=True).T
     k_loop = k_s_table_loop[0]
