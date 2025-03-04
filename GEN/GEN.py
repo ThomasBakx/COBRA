@@ -284,6 +284,8 @@ class CobraGEN:
             alpha = 0.35
             if n_basis > 16:
                 raise NBasisError("Can use at most 16 basis functions for this range")
+        else:
+            raise ValueError(f'Unknown param_range {self.param_range}')
 
         if k_out_hfid[-1] > k_lin_internal[-1] or k_out_hfid[0] < k_lin_internal[0]:
             raise KRangeError("Wavenumber out of bounds")
@@ -384,8 +386,8 @@ class CobraGEN:
         
         mu_out = self.mu
         
-        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, 
-                                                 weights, resum, growth_rates, disps_hfid, n_basis_list)
+        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, growth_rates, mu_out,
+                                                 weights, resum, disps_hfid, n_basis_list)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')
 
