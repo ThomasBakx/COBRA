@@ -190,12 +190,6 @@ class CobraGEN:
         if k_out_hfid[-1] > k_lin_internal[-1] or k_out_hfid[0] < k_lin_internal[0]:
             raise KRangeError("Wavenumber out of bounds")
 
-        if resum:
-            if disps_hfid is None:
-                raise ConfigError("If resum = True, displacements must also be provided")
-            else: 
-                disps = disps_hfid
-
         if weights is None:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if self.param_range == 'def':
@@ -235,6 +229,10 @@ class CobraGEN:
 
         ## assemble all the pieces
         if resum:
+            if disps_hfid is None:
+                raise ConfigError("If resum = True, displacements must also be provided")
+            else:
+                disps = disps_hfid
             vj_nw, vj_w = self.s_tables_lin["vj_nw"], self.s_tables_lin["vj_w"]
             vj_ir = vj_nw[None, :n_basis, :] + vj_w[None, :n_basis, :] * np.exp(- (k_lin_internal ** 2)[None, None, :] * disps[:, None, None])
             pk = np.einsum('ab, abk -> ak', wts, vj_ir, optimize = 'greedy')
