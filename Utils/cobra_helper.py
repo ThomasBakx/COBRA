@@ -71,8 +71,8 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
             s_table_loop[:, j, m, :] = s_table_reshape[:, ind, :]
 
     return k_loop, s_table_loop
-    
-def get_angles_and_GL_weights(): 
+
+def get_angles_and_GL_weights():
     
     """
     Do angle integration as in velocileptors: see e.g. 
@@ -84,7 +84,7 @@ def get_angles_and_GL_weights():
     nus, ws = legendre.leggauss(2 * ngauss)
     mu = nus[0:ngauss] 
     
-    ## legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
+    # legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
     
     L0 = np.array([2 * 1/2 * legendre.Legendre((1))(mu)])
     L2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
