@@ -117,7 +117,7 @@ class CobraGEN:
             p_over_growth_sq_rbf = 1 / (expit(p_over_growth_sq_rbf) * 100)  # undo logit transformation (see App. C)
 
         # rescale disps and wts by A_s and growth factor squared
-        growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** (alpha)
+        growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** alpha
 
         wts = wts_rbf[:,1:] * (as_over_asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
 
@@ -217,7 +217,7 @@ class CobraGEN:
                 p_over_growth_sq_rbf = 1 / (expit(p_over_growth_sq_rbf) * 100)  # undo logit transformation (see App. C)
 
             # rescale disps and wts by A_s and growth factor squared
-            growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** (alpha)
+            growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** alpha
 
             wts = wts_rbf[:,1:] * (as_over_asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
         else:
@@ -336,7 +336,7 @@ class CobraGEN:
                 p_over_growth_sq_rbf = 1 / (expit(p_over_growth_sq_rbf) * 100)  # undo logit transformation (see App. C)
 
             # rescale disps and wts by A_s and growth factor squared
-            growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** (alpha)
+            growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** alpha
 
             wts = wts_rbf[:,1:] * (as_over_asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
 
