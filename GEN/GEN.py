@@ -2,7 +2,7 @@ from scipy.special import expit
 import numpy as np
 from scipy.stats import qmc
 from scipy.interpolate import CubicSpline
-from Utils.cobra_helper import get_svd_results, get_rbf_tables, get_angles_and_GL_weights, get_rbf_param_config, get_bounds, \
+from Utils.cobra_helper import get_svd_results, get_rbf_tables, get_angles_and_gl_weights, get_rbf_param_config, get_bounds, \
 growth_factor_bar, rbf_interpolator
 from Utils.cobra_error import ParamRangeError, NBasisError, KRangeError, DimensionError, ConfigError
 from Utils.convert_units import convert_units_k_pk_to_hfid
@@ -36,7 +36,7 @@ class CobraGEN:
         self.s_tables_lin = {"k_lin": k_lin, "vj_hat": vj_hat, "vj": vj, "vj_nw": vj_nw, "vj_w": vj_w}
 
         ## multipole calculation: Gauss-Legendre quadrature as in velocileptors 
-        mu, ang = get_angles_and_GL_weights()
+        mu, ang = get_angles_and_gl_weights()
         self.mu = mu
         self.ang = ang
         

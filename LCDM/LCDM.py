@@ -9,7 +9,7 @@ Created on Mon Oct 21 12:13:59 2024
 import numpy as np
 from scipy.stats import qmc
 from scipy.interpolate import CubicSpline
-from Utils.cobra_helper import get_svd_results, get_loop_table, get_rbf_tables, get_angles_and_GL_weights, get_rbf_param_config, get_bounds, \
+from Utils.cobra_helper import get_svd_results, get_loop_table, get_rbf_tables, get_angles_and_gl_weights, get_rbf_param_config, get_bounds, \
 growth_factor_fid, growth_factor, growth_rate, rbf_interpolator
 from Utils.cobra_error import ParamRangeError, NBasisError, KRangeError, DimensionError, ConfigError 
 from Utils.convert_units import convert_units_k_pk_to_hfid
@@ -50,7 +50,7 @@ class CobraLCDM:
                               "mm1loop_nw": gg1loop_nw[0], "mm1loop_w": gg1loop_w[0]}
 
         ## multipole calculation: Gauss-Legendre quadrature as in velocileptors 
-        mu, ang = get_angles_and_GL_weights()
+        mu, ang = get_angles_and_gl_weights()
         self.mu = mu
         self.ang = ang
         

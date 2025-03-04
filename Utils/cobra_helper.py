@@ -72,7 +72,7 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
 
     return k_loop, s_table_loop
 
-def get_angles_and_GL_weights():
+def get_angles_and_gl_weights():
     
     """
     Do angle integration as in velocileptors: see e.g. 
