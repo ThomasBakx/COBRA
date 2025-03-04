@@ -23,7 +23,7 @@ class CobraGEN:
         self.param_range = param_range 
         self.space = 'GEN'
         
-        ## result from the svd
+        # result from the svd
 
         k_pk_bar, k_vj_hat, k_vj_nw, k_vj = get_svd_results(space = self.space, param_range = self.param_range)
         k_lin, vj_hat = k_vj_hat[0], k_vj_hat[1:]
@@ -35,24 +35,24 @@ class CobraGEN:
 
         self.s_tables_lin = {"k_lin": k_lin, "vj_hat": vj_hat, "vj": vj, "vj_nw": vj_nw, "vj_w": vj_w}
 
-        ## multipole calculation: Gauss-Legendre quadrature as in velocileptors 
+        # multipole calculation: Gauss-Legendre quadrature as in velocileptors
         mu, ang = get_angles_and_gl_weights()
         self.mu = mu
         self.ang = ang
         
-        ## rbf tables
+        # rbf tables
 
         bmat_d, bmat_wts = get_rbf_tables(space = self.space, param_range = self.param_range)
         
         self.bmat_wts = bmat_wts
         self.bmat_d = bmat_d
         
-        ## rbf parameter configs
+        # rbf parameter configs
         
         self.param_config_9D = get_rbf_param_config(dim = 9)
         self.param_config_6D = get_rbf_param_config(dim = 6)
         
-        ## bounds for parameter spaces
+        # bounds for parameter spaces
 
         bounds_9d, bounds_6d = get_bounds(space = self.space, param_range = self.param_range)
         
@@ -67,7 +67,7 @@ class CobraGEN:
 
         self.bias_keys_lin = ['b1']
         
-    ################ methods ##################
+    # methods ##################
 
     def rbf_weights(self, cosmo:dict[str,list], n_basis_list:list[int]):
         """
@@ -116,7 +116,7 @@ class CobraGEN:
         if self.param_range == 'ext':
             p_over_growth_sq_rbf = 1 / (expit(p_over_growth_sq_rbf) * 100)  # undo logit transformation (see App. C)
 
-        ## rescale disps and wts by A_s and growth factor squared
+        # rescale disps and wts by A_s and growth factor squared
         growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** (alpha)
 
         wts = wts_rbf[:,1:] * (as_over_asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
