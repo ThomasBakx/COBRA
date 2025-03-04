@@ -236,8 +236,7 @@ class CobraGEN:
             vj_nw, vj_w = self.s_tables_lin["vj_nw"], self.s_tables_lin["vj_w"]
             vj_ir = vj_nw[None, :n_basis, :] + vj_w[None, :n_basis, :] * np.exp(- (k_lin_internal ** 2)[None, None, :] * disps[:, None, None])
             pk = np.einsum('ab, abk -> ak', wts, vj_ir, optimize = 'greedy')
-
-        if not resum:
+        else:
             vj = self.s_tables_lin["vj"]
             pk = wts @ vj[:n_basis]
 
@@ -306,8 +305,7 @@ class CobraGEN:
                 raise ConfigError("If resum = True, displacements must also be provided")
             else:
                 disps = disps_hfid
-
-        if not resum:
+        else:
             disps = np.zeros(n_cosmo)
 
         if weights is None:
