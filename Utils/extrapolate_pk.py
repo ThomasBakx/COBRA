@@ -3,7 +3,7 @@ import numpy as np
 def extrapolate_pk(k_pk:np.ndarray):
     """ 
     Extrapolate k_pk array using a power law at low k and gaussian decay at high k.
-    Ouput range is from 1e-5 to 1e2. 
+    Output range is from 1e-5 to 1e2.
     """
     
     k_in = k_pk[0]
