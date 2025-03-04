@@ -106,16 +106,16 @@ def get_rbf_param_config(dim):
         eps = 0.1
         alpha = 1.8
         max_deg = 11
-
-    if dim == 6:
+    elif dim == 6:
         eps = 0.1
         alpha = 1.8
         max_deg = 15
-    
-    if dim == 9:
+    elif dim == 9:
         eps = 0.1
         alpha = 2.5 ##important!! Inverse global length scale associated with the problem, take alpha = 2 or 3?
         max_deg = 16
+    else:
+        raise ValueError(f'Incorrect value of dim={dim}')
         
     beta = (1 + (2 * eps/alpha) ** 2) ** (1 / 4)
     deltasq = (alpha ** 2 / 2) * (beta ** 2 - 1)
