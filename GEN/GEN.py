@@ -190,16 +190,11 @@ class CobraGEN:
         if k_out_hfid[-1] > k_lin_internal[-1] or k_out_hfid[0] < k_lin_internal[0]:
             raise KRangeError("Wavenumber out of bounds")
 
-        if weights is not None:
-            if cosmo is not None:
-                raise ConfigError("If you provide weights, put cosmo = None")
-            wts = weights ## wts is n_cosmo x n_basis  
-
         if resum:
             if disps_hfid is None:
                 raise ConfigError("If resum = True, displacements must also be provided")
             else: 
-                disps = disps_hfid 
+                disps = disps_hfid
 
         if weights is None:
             cosmo_keys_list = [key for key in cosmo.keys()]
@@ -232,7 +227,11 @@ class CobraGEN:
             ## rescale disps and wts by A_s and growth factor squared
             growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** (alpha)
 
-            wts = wts_rbf[:,1:] * (As_over_Asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None] 
+            wts = wts_rbf[:,1:] * (As_over_Asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
+        else:
+            if cosmo is not None:
+                raise ConfigError("If you provide weights, put cosmo = None")
+            wts = weights  ## wts is n_cosmo x n_basis
 
         ## assemble all the pieces
         if resum:
