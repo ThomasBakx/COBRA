@@ -197,6 +197,8 @@ def growth_factor_bar(cosm:np.ndarray, param_range:str):  # D_bar
     elif param_range == 'ext':
         omega_m, ok, h, w0, wp, a = cosm
         wa = wp - w0
+    else:
+        raise ValueError(f'Incorrect value for param_range={param_range}')
         
     omega_k = ok * h ** 2
     omega_l = h ** 2 - omega_m - omega_k
