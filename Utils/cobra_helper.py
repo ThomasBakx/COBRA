@@ -86,11 +86,11 @@ def get_angles_and_gl_weights():
     
     # legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
     
-    L0 = np.array([2 * 1/2 * legendre.Legendre((1))(mu)])
-    L2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
-    L4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
+    l0 = np.array([2 * 1/2 * legendre.Legendre((1))(mu)])
+    l2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
+    l4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
 
-    ang = (np.concatenate([L0, L2, L4]).T) * ws[:ngauss, None]
+    ang = (np.concatenate([l0, l2, l4]).T) * ws[:ngauss, None]
     return mu, ang
 
 def get_rbf_param_config(dim):
@@ -146,17 +146,17 @@ def get_bounds(space:str, param_range:str):
 
     if space == 'GEN':
         if param_range == 'def':
-            bounds_9D = np.array([[0.095, 0.0202, -0.12, 0.55, 0.9, 0, -1.25, -0.3, 0],
+            bounds_9d = np.array([[0.095, 0.0202, -0.12, 0.55, 0.9, 0, -1.25, -0.3, 0],
                                   [0.145, 0.0238, 0.12, 0.8, 1.02, 0.6, -0.75, 0.3, 3]])
-            bounds_6D = np.array([[0.11, -0.13, 0.53, -1.28, -0.33, 0.25],
+            bounds_6d = np.array([[0.11, -0.13, 0.53, -1.28, -0.33, 0.25],
                                   [0.175, 0.13, 0.82, -0.72, 0.33, 1]])
-            return bounds_9D, bounds_6D
+            return bounds_9d, bounds_6d
         if param_range == 'ext':
-            bounds_9D = np.array([[0.08, 0.020, -0.2, 0.5, 0.8, 0, -1.4, -1.8, 0],
+            bounds_9d = np.array([[0.08, 0.020, -0.2, 0.5, 0.8, 0, -1.4, -1.8, 0],
                                   [0.155, 0.025, 0.2, 0.9, 1.1, 1, -0.6, -0.4, 3.1]])
-            bounds_6D = np.array([[0.095, -0.21, 0.49, -1.42, -1.85, 0.25],
+            bounds_6d = np.array([[0.095, -0.21, 0.49, -1.42, -1.85, 0.25],
                                   [0.185, 0.21, 0.92, -0.58, -0.35, 1]])
-            return bounds_9D, bounds_6D
+            return bounds_9d, bounds_6d
 
 def growth_rate(cosm:np.ndarray):  # growth rate in LCDM
     omega_m, h, a = cosm
