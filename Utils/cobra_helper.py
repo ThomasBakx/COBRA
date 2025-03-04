@@ -86,7 +86,7 @@ def get_angles_and_gl_weights():
     
     # legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
     
-    l0 = np.array([2 * 1/2 * legendre.Legendre((1))(mu)])
+    l0 = np.array([2 * 1/2 * legendre.Legendre((1,))(mu)])
     l2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
     l4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
 
