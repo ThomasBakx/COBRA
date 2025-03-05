@@ -54,6 +54,8 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
         n_basis_max = 12        
     elif param_range == 'ext':
         n_basis_max = 16
+    else:
+        raise ValueError(f'Unknown param_range {param_range}')
 
     k_s_table_loop = np.loadtxt("./" + space + "/Stables/" + param_range + "/gg1loop_" + w_nw + "_" + space + param_range + ".dat", unpack=True).T
     k_loop = k_s_table_loop[0]
@@ -69,8 +71,8 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
             s_table_loop[:, j, m, :] = s_table_reshape[:, ind, :]
 
     return k_loop, s_table_loop
-    
-def get_angles_and_GL_weights(): 
+
+def get_angles_and_gl_weights():
     
     """
     Do angle integration as in velocileptors: see e.g. 
@@ -82,13 +84,14 @@ def get_angles_and_GL_weights():
     nus, ws = legendre.leggauss(2 * ngauss)
     mu = nus[0:ngauss] 
     
-    ## legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
+    # legendre polynomials computed at appropriate angles - include factor of 2 and (2l+1)/2, as well as angular weights #
     
-    L0 = np.array([2 * 1/2 * legendre.Legendre((1))(mu)])
-    L2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
-    L4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
+    l0 = np.array([2 * 1/2 * legendre.Legendre((1,))(mu)])
+    l2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
+    l4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
 
-    ang = (np.concatenate([L0, L2, L4]).T) * ws[:ngauss, None]
+    # TODO: if you want this to be a tuple, insert a comma after T. If you want float, remove parentheses
+    ang = (np.concatenate([l0, l2, l4]).T) * ws[:ngauss, None]
     return mu, ang
 
 def get_rbf_param_config(dim):
@@ -104,16 +107,16 @@ def get_rbf_param_config(dim):
         eps = 0.1
         alpha = 1.8
         max_deg = 11
-
-    if dim == 6:
+    elif dim == 6:
         eps = 0.1
         alpha = 1.8
         max_deg = 15
-    
-    if dim == 9:
+    elif dim == 9:
         eps = 0.1
         alpha = 2.5 ##important!! Inverse global length scale associated with the problem, take alpha = 2 or 3?
         max_deg = 16
+    else:
+        raise ValueError(f'Incorrect value of dim={dim}')
         
     beta = (1 + (2 * eps/alpha) ** 2) ** (1 / 4)
     deltasq = (alpha ** 2 / 2) * (beta ** 2 - 1)
@@ -125,7 +128,8 @@ def get_rbf_param_config(dim):
         
     return dim, eps, alpha, beta, deltasq, max_deg, ind_array_m
 
-def get_bounds(space:str, param_range:str): 
+
+def get_bounds(space:str, param_range:str):
     
     """
     cosmo bounds and growth factor bounds for all cosmological parameter spaces involved. 
@@ -143,17 +147,17 @@ def get_bounds(space:str, param_range:str):
 
     if space == 'GEN':
         if param_range == 'def':
-            bounds_9D = np.array([[0.095, 0.0202, -0.12, 0.55, 0.9, 0, -1.25, -0.3, 0], \
+            bounds_9d = np.array([[0.095, 0.0202, -0.12, 0.55, 0.9, 0, -1.25, -0.3, 0],
                                   [0.145, 0.0238, 0.12, 0.8, 1.02, 0.6, -0.75, 0.3, 3]])
-            bounds_6D = np.array([[0.11, -0.13, 0.53, -1.28, -0.33, 0.25], \
+            bounds_6d = np.array([[0.11, -0.13, 0.53, -1.28, -0.33, 0.25],
                                   [0.175, 0.13, 0.82, -0.72, 0.33, 1]])
-            return bounds_9D, bounds_6D
+            return bounds_9d, bounds_6d
         if param_range == 'ext':
-            bounds_9D = np.array([[0.08, 0.020, -0.2, 0.5, 0.8, 0, -1.4, -1.8, 0], \
+            bounds_9d = np.array([[0.08, 0.020, -0.2, 0.5, 0.8, 0, -1.4, -1.8, 0],
                                   [0.155, 0.025, 0.2, 0.9, 1.1, 1, -0.6, -0.4, 3.1]])
-            bounds_6D = np.array([[0.095, -0.21, 0.49, -1.42, -1.85, 0.25], \
+            bounds_6d = np.array([[0.095, -0.21, 0.49, -1.42, -1.85, 0.25],
                                   [0.185, 0.21, 0.92, -0.58, -0.35, 1]])
-            return bounds_9D, bounds_6D
+            return bounds_9d, bounds_6d
 
 def growth_rate(cosm:np.ndarray):  # growth rate in LCDM
     omega_m, h, a = cosm
@@ -195,6 +199,8 @@ def growth_factor_bar(cosm:np.ndarray, param_range:str):  # D_bar
     elif param_range == 'ext':
         omega_m, ok, h, w0, wp, a = cosm
         wa = wp - w0
+    else:
+        raise ValueError(f'Incorrect value for param_range={param_range}')
         
     omega_k = ok * h ** 2
     omega_l = h ** 2 - omega_m - omega_k

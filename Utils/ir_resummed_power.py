@@ -19,7 +19,7 @@ def ir_resummed_power(k_pk:np.ndarray):
     pk_in = k_pk_extrap[1]
     pk_nw = no_wiggle_power(k_pk_extrap)[1]
     disp = sigma_squared_bao(k_pk_extrap)
-    pk_ir = pk_nw + np.exp( - k_in ** 2 * disp) * (pk_in - pk_nw)
+    pk_ir = pk_nw + np.exp(- k_in ** 2 * disp) * (pk_in - pk_nw)
     pk_ir_spl = CubicSpline(np.log10(k_in),pk_ir)(np.log10(k_pk[0]))
     
     return np.array([k_pk[0], pk_ir_spl])

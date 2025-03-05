@@ -34,11 +34,11 @@ def no_wiggle_power(k_pk:np.ndarray):
     sigma = 0.005 + 0.45 * np.exp(- 0.9 * (lk_eh_cut + 0.15) ** 2) * (1 / (1 + np.exp(8 * (lk_eh_cut + 0.5))))
 
     pk_nw_integrand = lambda lq: 1 / (abs(sigma) * np.sqrt(2 * np.pi)) * pk_log_spl(lq) / pk_eh_log_spl(lq) * \
-    np.exp(- 1 / (2 * sigma ** 2) * (lq - lk_eh_cut) ** 2)
+        np.exp(- 1 / (2 * sigma ** 2) * (lq - lk_eh_cut) ** 2)
     
-    pk_nw = pk_eh_cut * quad_vec(pk_nw_integrand, np.log10(8e-4), np.log10(4), norm='max', points=[-2,0]) [0] 
+    pk_nw = pk_eh_cut * quad_vec(pk_nw_integrand, np.log10(8e-4), np.log10(4), norm='max', points=[-2,0])[0]
  
-    ## attach pk_extrap at high and low ends again 
+    # attach pk_extrap at high and low ends again
     idx_low = np.min(np.where(k_extrap > k_eh_cut[0])[0])
 
     idx_khigh = np.max(np.where(k_extrap < k_eh_cut[-1])[0])
