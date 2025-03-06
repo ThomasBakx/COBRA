@@ -49,15 +49,15 @@ class CobraGEN:
         
         # rbf parameter configs
         
-        self.param_config_9D = get_rbf_param_config(dim = 9)
-        self.param_config_6D = get_rbf_param_config(dim = 6)
+        self.param_config_9d = get_rbf_param_config(dim = 9)
+        self.param_config_6d = get_rbf_param_config(dim = 6)
         
         # bounds for parameter spaces
 
         bounds_9d, bounds_6d = get_bounds(space = self.space, param_range = self.param_range)
         
-        self.bounds_9D = bounds_9d
-        self.bounds_6D = bounds_6d
+        self.bounds_9d = bounds_9d
+        self.bounds_6d = bounds_6d
 
         if param_range == 'def':
             self.param_keys = ['omch2', 'ombh2', 'Omk', 'h', 'ns', 'Mnu', 'w0', 'wa', 'z', 'As']
@@ -106,11 +106,11 @@ class CobraGEN:
         cosm_6d = np.delete(cosm_6d, 0, 1)
         cosm_6d[:, -1] = 1 / (1 + cosm_6d[:, -1])  # c+b,k,h,w0,wa or wp,a
 
-        unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9D[0], self.bounds_9D[1], reverse = True)
-        unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6D[0], self.bounds_6D[1], reverse = True)
+        unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9d[0], self.bounds_9d[1], reverse = True)
+        unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6d[0], self.bounds_6d[1], reverse = True)
     
-        wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9D, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
-        growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6D, self.bmat_d)[:,0] # n_cosmo
+        wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9d, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
+        growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6d, self.bmat_d)[:,0] # n_cosmo
 
         p_over_growth_sq_rbf = wts_rbf[:,0]
         if self.param_range == 'ext':
@@ -158,8 +158,9 @@ class CobraGEN:
 
         return wts, k_pk_cobra
 
-    def linear_matter_power(self, cosmo:dict[str,list], k_out_hfid:np.ndarray, weights:np.ndarray = None, resum:bool = False,
-                            disps_hfid:np.ndarray = None, n_basis_list:list[int] = [16]):
+    def linear_matter_power(self, cosmo:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
+                            weights:np.ndarray = None, resum:bool = False,
+                            disps_hfid:np.ndarray = None):
         
         """
         Compute linear matter power spectrum given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -206,11 +207,11 @@ class CobraGEN:
             cosm_6d = np.delete(cosm_6d, 0, 1)
             cosm_6d[:, -1] = 1 / (1 + cosm_6d[:, -1])  # c+b,k,h,w0,wa or wp,a
 
-            unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9D[0], self.bounds_9D[1], reverse = True)
-            unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6D[0], self.bounds_6D[1], reverse = True)
+            unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9d[0], self.bounds_9d[1], reverse = True)
+            unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6d[0], self.bounds_6d[1], reverse = True)
     
-            wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9D, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
-            growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6D, self.bmat_d)[:,0] # n_cosmo
+            wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9d, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
+            growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6d, self.bmat_d)[:,0] # n_cosmo
 
             p_over_growth_sq_rbf = wts_rbf[:,0]
             if self.param_range == 'ext':
@@ -242,9 +243,10 @@ class CobraGEN:
         
         return pk_out_hfid
 
-    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, growth_rates:np.ndarray,
+    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
+                                  growth_rates:np.ndarray,
                                   mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = False,
-                                  disps_hfid:np.ndarray = None, n_basis_list:list[int] = [12]):
+                                  disps_hfid:np.ndarray = None):
 
         """
         Compute linear galaxy power spectrum in redshift space given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -264,7 +266,6 @@ class CobraGEN:
         bias_shape = np.shape(bias_arr)
 
         # bias vector
-        b1 = bias_arr       
         if bias_shape[1] != 1:
             raise DimensionError("Please specify one bias: b1")
 
@@ -298,14 +299,6 @@ class CobraGEN:
 
             else: 
                 wts = weights[:, :n_basis] ## wts is n_cosmo x n_basis_max 
-        
-        if resum:
-            if disps_hfid is None:
-                raise ConfigError("If resum = True, displacements must also be provided")
-            else:
-                disps = disps_hfid
-        else:
-            disps = np.zeros(n_cosmo)
 
         if weights is None:
             cosmo_keys_list = [key for key in cosmo.keys()]
@@ -317,6 +310,7 @@ class CobraGEN:
                     raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wp, z, As")
                 
             cosm_tot = np.array([val for val in cosmo.values()]).T
+            n_cosmo = np.shape(cosm_tot)[0] ## added n_cosmo definition when weights = None
             
             as_over_asfid = cosm_tot[:, -1] / 2
             cosm_tot = cosm_tot[:, :-1]
@@ -325,11 +319,11 @@ class CobraGEN:
             cosm_6d = np.delete(cosm_6d, 0, 1)
             cosm_6d[:, -1] = 1 / (1 + cosm_6d[:, -1])  # c+b,k,h,w0,wa or wp,a
 
-            unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9D[0], self.bounds_9D[1], reverse = True)
-            unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6D[0], self.bounds_6D[1], reverse = True)
+            unit_cube_9d = qmc.scale(cosm_tot, self.bounds_9d[0], self.bounds_9d[1], reverse = True)
+            unit_cube_6d = qmc.scale(cosm_6d, self.bounds_6d[0], self.bounds_6d[1], reverse = True)
     
-            wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9D, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
-            growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6D, self.bmat_d)[:,0] # n_cosmo
+            wts_rbf = rbf_interpolator(unit_cube_9d, self.param_config_9d, self.bmat_wts[:n_basis + 1]) # n_cosmo x (1 + n_basis)
+            growth_fac_rbf = rbf_interpolator(unit_cube_6d, self.param_config_6d, self.bmat_d)[:,0] # n_cosmo
 
             p_over_growth_sq_rbf = wts_rbf[:,0]
             if self.param_range == 'ext':
@@ -339,38 +333,48 @@ class CobraGEN:
             growth_over_growth_fid = growth_fac_rbf * (growth_factor_bar(cosm_6d.T, self.param_range)) ** alpha
 
             wts = wts_rbf[:,1:] * (as_over_asfid * p_over_growth_sq_rbf * growth_over_growth_fid ** 2)[:, None]
-
-            mu2 = (mu_out ** 2)[None, None, :]
-            disps_tens = disps[None, :, None]
-            f_tens = growth_rates[None, :, None]
             
-            k_lin_internal, vj_nw, vj_w = self.s_tables_lin["k_lin"], self.s_tables_lin["vj_nw"], self.s_tables_lin["vj_w"]
-    
-            k2 = (k_lin_internal ** 2)[:, None, None]
-            damp_e = -disps_tens * k2 * (1 + (f_tens * (2 + f_tens)) * mu2)
-            damp_f = np.exp(damp_e) #n_k_lin x n_cosmo x n_mu
+        ## moved resum block below weights calculation 
+        if resum:
+            if disps_hfid is None:
+                raise ConfigError("If resum = True, displacements must also be provided")
+            else:
+                disps = disps_hfid
+        else:
+            disps = np.zeros(n_cosmo)
+
+        ## moved out of if-statement 
+        mu2 = (mu_out ** 2)[None, None, :]
+        disps_tens = disps[None, :, None]
+        f_tens = growth_rates[None, :, None]
         
-            plin_nw = (wts @ vj_nw[:n_basis]).T  #  n_k_lin x n_cosmo
-            plin_w = (wts @ vj_w[:n_basis]).T  # n_k_lin x n_cosmo
-    
-            plin_nw_tens = plin_nw[:, :, None]
-            plin_w_tens = plin_w[:, :, None]
-    
-            b1 = bias_arr[:,0]
-    
-            b1_tens = b1[None, :, None]
-     
-            lin0 = (b1_tens + f_tens * mu2) ** 2 * (plin_nw_tens + damp_f * plin_w_tens)
+        k_lin_internal, vj_nw, vj_w = self.s_tables_lin["k_lin"], self.s_tables_lin["vj_nw"], self.s_tables_lin["vj_w"]
 
-            # lin_tot = np.einsum('rkm,ml->klr', lin0 + lin1 + lin2, self.ang, optimize='greedy')
-            lin_tot = np.moveaxis(lin0, 0, -1)
+        k2 = (k_lin_internal ** 2)[:, None, None]
+        damp_e = -disps_tens * k2 * (1 + (f_tens * (2 + f_tens)) * mu2)
+        damp_f = np.exp(damp_e) #n_k_lin x n_cosmo x n_mu
     
-            pmuk_out_hfid = CubicSpline(np.log10(k_lin_internal), lin_tot, axis=2)(np.log10(k_out_hfid))
-    
-            return pmuk_out_hfid
+        plin_nw = (wts @ vj_nw[:n_basis]).T  #  n_k_lin x n_cosmo
+        plin_w = (wts @ vj_w[:n_basis]).T  # n_k_lin x n_cosmo
 
-    def linear_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, growth_rates:np.ndarray,
-                                       weights:np.ndarray = None, resum:bool = False, disps_hfid:np.ndarray = None, n_basis_list:list[int] = [12]):
+        plin_nw_tens = plin_nw[:, :, None]
+        plin_w_tens = plin_w[:, :, None]
+
+        b1 = bias_arr[:,0]
+
+        b1_tens = b1[None, :, None]
+ 
+        lin0 = (b1_tens + f_tens * mu2) ** 2 * (plin_nw_tens + damp_f * plin_w_tens)
+
+        # lin_tot = np.einsum('rkm,ml->klr', lin0 + lin1 + lin2, self.ang, optimize='greedy')
+        lin_tot = np.moveaxis(lin0, 0, -1)
+
+        pmuk_out_hfid = CubicSpline(np.log10(k_lin_internal), lin_tot, axis=2)(np.log10(k_out_hfid))
+
+        return pmuk_out_hfid
+
+    def linear_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
+                                       growth_rates:np.ndarray, weights:np.ndarray = None, resum:bool = False, disps_hfid:np.ndarray = None):
 
         """
         Compute linear galaxy power spectrum multipoles given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -381,8 +385,8 @@ class CobraGEN:
         
         mu_out = self.mu
         
-        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, growth_rates, mu_out,
-                                                       weights, resum, disps_hfid, n_basis_list)
+        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, n_basis_list, growth_rates, mu_out,
+                                                       weights, resum, disps_hfid)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')
 

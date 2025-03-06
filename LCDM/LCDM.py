@@ -64,7 +64,7 @@ class CobraLCDM:
         
         ## rbf parameter configs
         
-        self.param_config_3D = get_rbf_param_config(dim = 3)
+        self.param_config_3d = get_rbf_param_config(dim = 3)
         
         ## bounds for parameter spaces
 
@@ -125,8 +125,8 @@ class CobraLCDM:
         cbns_unit_cube = qmc.scale(cbns, self.bounds_cbns[0], self.bounds_cbns[1], reverse = True)
         mha_unit_cube = qmc.scale(mha, self.bounds_mha[0], self.bounds_mha[1], reverse = True)
     
-        wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, self.bmat_wts[:n_basis]) # n_cosmo x (n_basis)
-        growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, self.bmat_d)[:, 0] # n_cosmo
+        wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, self.bmat_wts[:n_basis]) # n_cosmo x (n_basis)
+        growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, self.bmat_d)[:, 0] # n_cosmo
 
             ## rescale disps and wts by A_s and growth factor squared
         growth_over_growth_fid = growth_fac_rbf * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])
@@ -159,7 +159,7 @@ class CobraLCDM:
 
         mha_unit_cube = qmc.scale(mha, self.bounds_mha[0], self.bounds_mha[1], reverse = True)
 
-        growth_rate_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, self.bmat_gr)[:,0] # n_cosmo
+        growth_rate_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, self.bmat_gr)[:,0] # n_cosmo
         return growth_rate_rbf * growth_rate(mha.T) 
 
     def rbf_sigma_squared_bao(self, cosmo:dict[str,list]):
@@ -190,8 +190,8 @@ class CobraLCDM:
         cbns_unit_cube = qmc.scale(cbns, self.bounds_cbns[0], self.bounds_cbns[1], reverse = True)
         mha_unit_cube = qmc.scale(mha, self.bounds_mha[0], self.bounds_mha[1], reverse = True)
 
-        disps_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, self.bmat_disp)[:,0] # n_cosmo 
-        growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, self.bmat_d)[:,0] # n_cosmo
+        disps_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, self.bmat_disp)[:,0] # n_cosmo 
+        growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, self.bmat_d)[:,0] # n_cosmo
 
         growth_over_growth_fid = growth_fac_rbf * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])
             ## rescale disps by A_s and growth factor squared
@@ -242,9 +242,8 @@ class CobraLCDM:
         return wts, k_pk_cobra
 
     
-    def linear_matter_power(self, cosmo:dict[str,list], k_out_hfid:np.ndarray, 
-                      weights:np.ndarray = None, resum:bool = False, disps_hfid:np.ndarray = None, 
-                      n_basis_list:list[int] = [12]):
+    def linear_matter_power(self, cosmo:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
+                      weights:np.ndarray = None, resum:bool = False, disps_hfid:np.ndarray = None):
 
         """
         Compute linear matter power spectrum given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -300,8 +299,8 @@ class CobraLCDM:
 
             bmat_disps_wts = np.concatenate([self.bmat_disp, self.bmat_wts[:n_basis]])
     
-            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, bmat_disps_wts) # n_cosmo x (1 + n_basis)
-            growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, self.bmat_d)[:, 0] # n_cosmo
+            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, bmat_disps_wts) # n_cosmo x (1 + n_basis)
+            growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, self.bmat_d)[:, 0] # n_cosmo
 
             ## rescale disps and wts by A_s and growth factor squared
             growth_over_growth_fid = growth_fac_rbf * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])
@@ -310,7 +309,7 @@ class CobraLCDM:
 
             wts = disps_wts[:,1:] # wts is n_cosmo x n_basis 
             
-            if disps_hfid is None:
+            if disps_hfid is None: #displacement is set and computed even if resum = False (negligible overhead)
                 disps = disps_wts[:, 0]  
             else:
                 disps = disps_hfid 
@@ -330,10 +329,9 @@ class CobraLCDM:
         return pk_out_hfid 
 
 
-    def oneloop_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, mu_out:np.ndarray,
-                              weights:np.ndarray = None, resum:bool = True,
-                              growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None, has_linear:bool = True, 
-                              n_basis_list:list[int] = [12,12]):
+    def oneloop_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
+                                   mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, 
+                                   disps_hfid:np.ndarray = None, has_linear:bool = True):
 
         """
         Compute one-loop galaxy power spectrum in redshift space given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -377,9 +375,9 @@ class CobraLCDM:
         
         if not has_linear:
             b1_dict = {'b1':b1}
-            lin_comp = self.linear_galaxy_power_at_mu(cosmo, b1_dict, k_out_hfid, mu_out,
+            lin_comp = self.linear_galaxy_power_at_mu(cosmo, b1_dict, k_out_hfid, [n_basis_lin], mu_out,
                                                         weights = weights, resum = resum, 
-                                                        growth_rates = growth_rates, disps_hfid = disps_hfid, n_basis_list = [n_basis_lin])
+                                                        growth_rates = growth_rates, disps_hfid = disps_hfid)
             
         ### compute weights, growth rate and disps - either passed as args or computed from cosmo 
     
@@ -433,8 +431,8 @@ class CobraLCDM:
             bmat_disps_wts = np.concatenate([self.bmat_disp, self.bmat_wts[:n_basis_max]])
             bmat_d_f = np.concatenate([self.bmat_d, self.bmat_gr])
     
-            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
-            d_f_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, bmat_d_f) # n_cosmo x 2
+            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
+            d_f_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, bmat_d_f) # n_cosmo x 2
 
             ## rescale disps and wts by A_s and growth factor squared
             growth_over_growth_fid = d_f_rbf[:, 0] * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])
@@ -558,9 +556,9 @@ class CobraLCDM:
     
         return pmuk_out_hfid # n_cosmo x n_mu x n_k_out
     
-    def oneloop_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str:list], k_out_hfid:np.ndarray, 
+    def oneloop_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str:list], k_out_hfid:np.ndarray, n_basis_list:list[int],
                             weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None, 
-                            has_linear:bool = True, n_basis_list:list[int] = [12,12]):
+                            has_linear:bool = True):
 
         """
         Compute one-loop galaxy power spectrum in redshift space given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -572,17 +570,17 @@ class CobraLCDM:
 
         mu_out = self.mu
         
-        pmuk_out_hfid = self.oneloop_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, 
-                                                 weights, resum, growth_rates, disps_hfid, has_linear, n_basis_list)
+        pmuk_out_hfid = self.oneloop_galaxy_power_at_mu(cosmo, bias, k_out_hfid, n_basis_list, mu_out, 
+                                                 weights, resum, growth_rates, disps_hfid, has_linear)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')
 
         return pellk_out_hfid
 
     
-    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, mu_out:np.ndarray, 
-                            weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None, 
-                            n_basis_list:list[int] = [12]):
+    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
+                                  mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, 
+                                  disps_hfid:np.ndarray = None):
         """
         Compute linear galaxy power spectrum in redshift space given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
         Optional resum. If disps_hfid (1d array) is provided (in units (Mpc/hfid)^2) this is used for displacement, otherwise emulated via rbf. 
@@ -662,8 +660,8 @@ class CobraLCDM:
             bmat_disps_wts = np.concatenate([self.bmat_disp, self.bmat_wts[:n_basis]])
             bmat_d_f = np.concatenate([self.bmat_d, self.bmat_gr])
     
-            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
-            d_f_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, bmat_d_f) # n_cosmo x 2
+            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
+            d_f_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, bmat_d_f) # n_cosmo x 2
 
             ## rescale disps and wts by A_s and growth factor squared
             growth_over_growth_fid = d_f_rbf[:, 0] * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])
@@ -716,9 +714,8 @@ class CobraLCDM:
         return pmuk_out_hfid
         
 
-    def linear_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, 
-                          weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None,
-                        disps_hfid:np.ndarray = None, n_basis_list:list[int] = [12]):
+    def linear_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
+                          weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None):
         """
         Compute linear galaxy power spectrum multipoles given cosmology dict or weights (2d array of size n_cosmo x n_weights) and bias dict. 
         Optional resum. If disps_hfid (1d array) is provided (in units (Mpc/hfid)^2) this is used for displacement, otherwise emulated via rbf.
@@ -735,9 +732,8 @@ class CobraLCDM:
 
         return pellk_out_hfid
 
-    def oneloop_matter_power(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, 
-                        weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, has_linear:bool = True,
-                        n_basis_list:list[int] = [12,12]):
+    def oneloop_matter_power(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
+                        weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, has_linear:bool = True):
 
         """
         Compute one-loop matter power spectrum given cosmology dict or weights (2d array of n_cosmo x n_weights) and one counterterm. 
@@ -777,8 +773,8 @@ class CobraLCDM:
         lin_comp = 0 ## linear theory is not subtracted unless has_linear = False
         
         if not has_linear:
-            lin_comp = self.linear_matter_power(cosmo, k_out_hfid, weights = weights, resum = resum, 
-                                          disps_hfid = disps_hfid, n_basis_list = [n_basis_lin])
+            lin_comp = self.linear_matter_power(cosmo, k_out_hfid, [n_basis_lin], weights = weights, resum = resum, 
+                                          disps_hfid = disps_hfid)
             
         ### compute weights, growth rate and disps - either passed as args or computed from cosmo 
     
@@ -827,8 +823,8 @@ class CobraLCDM:
 
             bmat_disps_wts = np.concatenate([self.bmat_disp, self.bmat_wts[:n_basis_max]])
     
-            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3D, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
-            growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3D, self.bmat_d)[:, 0] # n_cosmo
+            disps_wts_rbf = rbf_interpolator(cbns_unit_cube, self.param_config_3d, bmat_disps_wts) # n_cosmo x (1 + n_basis_max)
+            growth_fac_rbf = rbf_interpolator(mha_unit_cube, self.param_config_3d, self.bmat_d)[:, 0] # n_cosmo
 
             ## rescale disps and wts by A_s and growth factor squared
             growth_over_growth_fid = growth_fac_rbf * growth_factor(mha.T) / growth_factor_fid(mha[:, 0])

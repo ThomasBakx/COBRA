@@ -90,8 +90,8 @@ def get_angles_and_gl_weights():
     l2 = np.array([2 * 5/2 * legendre.Legendre((0, 0, 1))(mu)])
     l4 = np.array([2 * 9/2 * legendre.Legendre((0, 0, 0, 0, 1))(mu)])
 
-    # TODO: if you want this to be a tuple, insert a comma after T. If you want float, remove parentheses
-    ang = (np.concatenate([l0, l2, l4]).T) * ws[:ngauss, None]
+    # removed unnecessary parentheses
+    ang = np.concatenate([l0, l2, l4]).T * ws[:ngauss, None]
     return mu, ang
 
 def get_rbf_param_config(dim):
