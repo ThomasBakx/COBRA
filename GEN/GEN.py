@@ -297,9 +297,9 @@ class CobraGEN:
                 raise ConfigError("Not enough weights provided: number of requested basis functions exceeds number of weights") 
 
             else: 
-                wts = weights[:, :n_basis] ## wts is n_cosmo x n_basis_max 
+                wts = weights[:, :n_basis] ## wts is n_cosmo x n_basis_max
 
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if self.param_range == 'def':
                 if cosmo_keys_list != self.param_keys:
