@@ -86,14 +86,12 @@ class CobraGEN:
             raise NBasisError("Can use at most 16 basis functions for this range")
 
         cosmo_keys_list = [key for key in cosmo.keys()]
+        if cosmo_keys_list != self.param_keys:
+            raise DimensionError(f"Please specify 10 parameters for every cosmology: {', '.join(self.param_keys)}")
         if self.param_range == 'def':
             alpha = 1
-            if cosmo_keys_list != self.param_keys:
-                raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wa, z, As")
         elif self.param_range == 'ext':
             alpha = 0.35
-            if cosmo_keys_list != self.param_keys:
-                raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wp, z, As")
         else:
             raise ValueError(f'Unknown param_range {self.param_range}')
                 
@@ -297,9 +295,9 @@ class CobraGEN:
                 raise ConfigError("Not enough weights provided: number of requested basis functions exceeds number of weights") 
 
             else: 
-                wts = weights[:, :n_basis] ## wts is n_cosmo x n_basis_max 
+                wts = weights[:, :n_basis] ## wts is n_cosmo x n_basis_max
 
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if self.param_range == 'def':
                 if cosmo_keys_list != self.param_keys:
