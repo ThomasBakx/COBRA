@@ -1,0 +1,25 @@
+#toml file for COBRA package
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build-meta"
+
+[tool.setuptools]
+packages = ["cobra"]
+
+[tool.setuptools.packages]
+find = {}  
+
+[tool.setuptools.package_data]
+"cobra" = ["*.dat", "*.md"]  
+
+[project]
+name="cobra_package_TJMB"
+version="0.0.1"
+authors=[{name="Thomas Bakx", email="t.j.m.bakx@uu.nl"},]
+description="Package accompanying ArXiv:2407.04660"
+readme="README.md"
+requires-python=">=3.7"
+classifiers=["Programming Language :: Python :: 3","License :: OSI Approved :: MIT License", "Operating System :: OS Independent",]
+
+
