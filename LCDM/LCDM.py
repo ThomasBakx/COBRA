@@ -106,9 +106,11 @@ class CobraLCDM:
         elif self.param_range == 'ext':
             if n_basis > 16:
                 raise NBasisError("Can use at most 16 basis functions for this range")
+        else:
+            raise ValueError(f'Unknown param_range {self.param_range}') ## added same error as in GEN.py
         
         cosmo_keys_list = [key for key in cosmo.keys()]
-        if cosmo_keys_list != self.param_key_list:
+        if cosmo_keys_list != self.param_keys:
             raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, 10^9*As, h, z.")
             
         cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -329,8 +331,8 @@ class CobraLCDM:
         return pk_out_hfid 
 
 
-    def oneloop_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
-                                   mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, 
+    def oneloop_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, mu_out:np.ndarray, 
+                                   n_basis_list:list[int], growth_rates:np.ndarray = None, weights:np.ndarray = None, resum:bool = True,  
                                    disps_hfid:np.ndarray = None, has_linear:bool = True):
 
         """
@@ -375,9 +377,8 @@ class CobraLCDM:
         
         if not has_linear:
             b1_dict = {'b1':b1}
-            lin_comp = self.linear_galaxy_power_at_mu(cosmo, b1_dict, k_out_hfid, [n_basis_lin], mu_out,
-                                                        weights = weights, resum = resum, 
-                                                        growth_rates = growth_rates, disps_hfid = disps_hfid)
+            lin_comp = self.linear_galaxy_power_at_mu(cosmo, b1_dict, k_out_hfid, mu_out, [n_basis_lin], growth_rates = growth_rates,
+                                                        weights = weights, resum = resum, disps_hfid = disps_hfid)
             
         ### compute weights, growth rate and disps - either passed as args or computed from cosmo 
     
@@ -557,7 +558,7 @@ class CobraLCDM:
         return pmuk_out_hfid # n_cosmo x n_mu x n_k_out
     
     def oneloop_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str:list], k_out_hfid:np.ndarray, n_basis_list:list[int],
-                            weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None, 
+                            growth_rates:np.ndarray = None, weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, 
                             has_linear:bool = True):
 
         """
@@ -570,16 +571,16 @@ class CobraLCDM:
 
         mu_out = self.mu
         
-        pmuk_out_hfid = self.oneloop_galaxy_power_at_mu(cosmo, bias, k_out_hfid, n_basis_list, mu_out, 
-                                                 weights, resum, growth_rates, disps_hfid, has_linear)
+        pmuk_out_hfid = self.oneloop_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, n_basis_list, 
+                                                 growth_rates, weights, resum, disps_hfid, has_linear)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')
 
         return pellk_out_hfid
 
     
-    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
-                                  mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, 
+    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, mu_out:np.ndarray, 
+                                  n_basis_list:list[int], growth_rates:np.ndarray = None, weights:np.ndarray = None, resum:bool = True, 
                                   disps_hfid:np.ndarray = None):
         """
         Compute linear galaxy power spectrum in redshift space given input cosmology dict or weights (2d array of size n_cosmo x n_weights). 
@@ -634,6 +635,11 @@ class CobraLCDM:
                     raise ConfigError("If weights are provided and resum = True, displacements must also be provided")
                 else:
                     disps = disps_hfid
+
+            if growth_rates is None:
+                raise ConfigError("If weights are provided, growth rates must also be provided")
+            else:
+                f = growth_rates
 
         if weights is None:
             cosmo_keys_list = [key for key in cosmo.keys()]
@@ -715,7 +721,7 @@ class CobraLCDM:
         
 
     def linear_galaxy_power_multipoles(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
-                          weights:np.ndarray = None, resum:bool = True, growth_rates:np.ndarray = None, disps_hfid:np.ndarray = None):
+                          growth_rates:np.ndarray = None, weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None):
         """
         Compute linear galaxy power spectrum multipoles given cosmology dict or weights (2d array of size n_cosmo x n_weights) and bias dict. 
         Optional resum. If disps_hfid (1d array) is provided (in units (Mpc/hfid)^2) this is used for displacement, otherwise emulated via rbf.
@@ -725,8 +731,8 @@ class CobraLCDM:
         
         mu_out = self.mu
 
-        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, 
-                                                 weights, resum, growth_rates, disps_hfid, n_basis_list)
+        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, n_basis_list,
+                                                 growth_rates, weights, resum, disps_hfid)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')
 

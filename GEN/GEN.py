@@ -243,9 +243,8 @@ class CobraGEN:
         
         return pk_out_hfid
 
-    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int], 
-                                  growth_rates:np.ndarray,
-                                  mu_out:np.ndarray, weights:np.ndarray = None, resum:bool = False,
+    def linear_galaxy_power_at_mu(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, mu_out:np.ndarray, 
+                                  n_basis_list:list[int], growth_rates:np.ndarray, weights:np.ndarray = None, resum:bool = False,
                                   disps_hfid:np.ndarray = None):
 
         """
@@ -385,7 +384,7 @@ class CobraGEN:
         
         mu_out = self.mu
         
-        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, n_basis_list, growth_rates, mu_out,
+        pmuk_out_hfid = self.linear_galaxy_power_at_mu(cosmo, bias, k_out_hfid, mu_out, n_basis_list, growth_rates, 
                                                        weights, resum, disps_hfid)
         
         pellk_out_hfid = np.einsum('kmr,ml->klr', pmuk_out_hfid, self.ang, optimize='greedy')

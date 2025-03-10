@@ -23,7 +23,7 @@ def convert_units_k_pk_to_hfid(k_pk:np.ndarray, h_in:float):
     Converts a power spectrum in h_in units to other units given by h_fid = 0.7
     Takes 2d array k_pk of size 2 x n_bins (first index is k, second index is pk)
     Outputs array of the same dimension with the spectrum in h_fid units
-    Not vectorized -provide only one h_in.
+    Not vectorized - provide only one h_in.
     """ 
 
     k_in = k_pk[0]
