@@ -6,8 +6,6 @@ build-backend = "setuptools.build-meta"
 
 [tool.setuptools]
 packages = ["cobra"]
-
-[tool.setuptools.packages]
 find = {}  
 
 [tool.setuptools.package_data]
