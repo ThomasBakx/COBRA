@@ -740,7 +740,7 @@ class CobraLCDM:
 
     def oneloop_matter_power(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
                         weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, has_linear:bool = True):
-
+        # TODO: turn this into PyDoc format
         """
         Compute one-loop matter power spectrum given cosmology dict or weights (2d array of n_cosmo x n_weights) and one counterterm. 
         Optional resum. If disps_hfid (1d array) is provided (in units (Mpc/hfid)^2) this is used for displacement, otherwise emulated via rbf.
