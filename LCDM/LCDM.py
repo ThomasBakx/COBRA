@@ -280,7 +280,7 @@ class CobraLCDM:
                 else:
                     disps = disps_hfid
 
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if cosmo_keys_list != self.param_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
@@ -322,7 +322,7 @@ class CobraLCDM:
             vj_ir = vj_nw[None, :n_basis, :] + vj_w[None, :n_basis, :] * np.exp(- (k_lin_internal ** 2)[None, None, :] * disps[:, None, None])
             pk = np.einsum('ab, abk -> ak', wts, vj_ir, optimize = 'greedy')
 
-        if not resum:
+        else:
             vj = self.s_tables_lin["vj"]
             pk = wts @ vj[:n_basis]
 
@@ -407,7 +407,7 @@ class CobraLCDM:
             else:
                 f = growth_rates 
 
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if cosmo_keys_list != self.param_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
@@ -641,7 +641,7 @@ class CobraLCDM:
             else:
                 f = growth_rates
 
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if cosmo_keys_list != self.param_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
@@ -740,7 +740,7 @@ class CobraLCDM:
 
     def oneloop_matter_power(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
                         weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, has_linear:bool = True):
-
+        # TODO: turn this into PyDoc format
         """
         Compute one-loop matter power spectrum given cosmology dict or weights (2d array of n_cosmo x n_weights) and one counterterm. 
         Optional resum. If disps_hfid (1d array) is provided (in units (Mpc/hfid)^2) this is used for displacement, otherwise emulated via rbf.
@@ -804,7 +804,7 @@ class CobraLCDM:
                 else:
                     disps = disps_hfid
                     
-        if weights is None:
+        else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if cosmo_keys_list != self.param_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
