@@ -12,7 +12,7 @@ find = {}
 "cobra" = ["*.dat", "*.md"]  
 
 [project]
-name="cobra_package_TJMB"
+name="cobra"
 version="0.0.1"
 authors=[{name="Thomas Bakx", email="t.j.m.bakx@uu.nl"},]
 description="Package accompanying ArXiv:2407.04660"

@@ -73,7 +73,7 @@ class CobraLCDM:
         self.bounds_cbns = bounds_cbns
         self.bounds_mha = bounds_mha
 
-        self.param_keys = ['omch2', 'ombh2', 'ns', 'As', 'h', 'z']
+        self.cosmo_keys = ['omch2', 'ombh2', 'ns', 'As', 'h', 'z']
         
         ## bias ordering as in velocileptors: see e.g. 
         #https://github.com/sfschen/velocileptors/blob/master/velocileptors/EPT/ept_fullresum_fftw.py
@@ -110,7 +110,7 @@ class CobraLCDM:
             raise ValueError(f'Unknown param_range {self.param_range}') ## added same error as in GEN.py
         
         cosmo_keys_list = [key for key in cosmo.keys()]
-        if cosmo_keys_list != self.param_keys:
+        if cosmo_keys_list != self.cosmo_keys:
             raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, 10^9*As, h, z.")
             
         cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -149,7 +149,7 @@ class CobraLCDM:
         """
         
         cosmo_keys_list = [key for key in cosmo.keys()]
-        if cosmo_keys_list != self.param_keys:
+        if cosmo_keys_list != self.cosmo_keys:
             raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
         cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -175,7 +175,7 @@ class CobraLCDM:
         """
         
         cosmo_keys_list = [key for key in cosmo.keys()]
-        if cosmo_keys_list != self.param_keys:
+        if cosmo_keys_list != self.cosmo_keys:
             raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
         cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -282,7 +282,7 @@ class CobraLCDM:
 
         else:
             cosmo_keys_list = [key for key in cosmo.keys()]
-            if cosmo_keys_list != self.param_keys:
+            if cosmo_keys_list != self.cosmo_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
             cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -409,7 +409,7 @@ class CobraLCDM:
 
         else:
             cosmo_keys_list = [key for key in cosmo.keys()]
-            if cosmo_keys_list != self.param_keys:
+            if cosmo_keys_list != self.cosmo_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
             cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -643,7 +643,7 @@ class CobraLCDM:
 
         else:
             cosmo_keys_list = [key for key in cosmo.keys()]
-            if cosmo_keys_list != self.param_keys:
+            if cosmo_keys_list != self.cosmo_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
             cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -738,7 +738,7 @@ class CobraLCDM:
 
         return pellk_out_hfid
 
-    def oneloop_matter_power(self, cosmo:dict[str,list], bias:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
+    def oneloop_matter_power(self, cosmo:dict[str,list], ctr:dict[str,list], k_out_hfid:np.ndarray, n_basis_list:list[int],
                         weights:np.ndarray = None, resum:bool = True, disps_hfid:np.ndarray = None, has_linear:bool = True):
         # TODO: turn this into PyDoc format
         """
@@ -749,11 +749,11 @@ class CobraLCDM:
 
         k_loop_internal =  self.s_tables_loop["k_loop"]
 
-        ctr_keys_list = [key for key in bias.keys()]
+        ctr_keys_list = [key for key in ctr.keys()]
         if ctr_keys_list != self.bias_keys_ctr:
             raise DimensionError("Please specify one counterterm: csq")
             
-        ctr_arr = np.array([val for val in bias.values()]) ## convert to array
+        ctr_arr = np.array([val for val in ctr.values()]) ## convert to array
         
         bias_shape = np.shape(ctr_arr)
 
@@ -806,7 +806,7 @@ class CobraLCDM:
                     
         else:
             cosmo_keys_list = [key for key in cosmo.keys()]
-            if cosmo_keys_list != self.param_keys:
+            if cosmo_keys_list != self.cosmo_keys:
                 raise DimensionError("Please specify 6 parameters for every cosmology: the order is omch2, ombh2, ns, As, h, z.")
             
             cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -878,7 +878,7 @@ class CobraLCDM:
 
         ## counterterm with default knl = 1 hfid / Mpc
         lin0 = (plin_nw_kloop + damp_f * plin_w_kloop) 
-        - 2 * (2 * np.pi) * csq_tens * k_loop_internal ** 2 * (plin_nw_kloop + damp_f * plin_w_kloop)
+        - 2 * (2 * np.pi) * csq_tens * k2 * (plin_nw_kloop + damp_f * plin_w_kloop)
     
         # compensation for IR resummation
         lin1 = - damp_e * damp_f * plin_w_kloop

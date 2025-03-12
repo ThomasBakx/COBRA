@@ -21,11 +21,15 @@ def test_weights_or_cosmo():
     # cobra object
     cobra_lcdm = CobraLCDM(param_range = 'def')
     k_min_hfid = 0.002
-    k_max_hfid = 1.5
+    k_max_hfid = 0.5
     n_bins = 300
     k_out_hfid = np.logspace(np.log10(k_min_hfid), np.log10(k_max_hfid), n_bins)
     params = {'omch2':[0.13], 'ombh2':[0.021], 'ns':[0.97], 'As': [2], 'h': [0.68], 'z':[1]} 
     bias = {'b1':[1.5]}
+    bias_loop = {'b1':[1.68593608], 'b2':[-1.17], 'bs':[-0.715], 'b3':[-0.479], \
+               'alpha0':[50], 'alpha2':[50], 'alpha4':[50], 'alpha6':[50], \
+               'sn':[3000], 'sn2':[3000], 'sn4':[3000], 'bfog':[2]} 
+    ctr = {'csq':[2]}
 
     # calculate weights and disps
     weights_rbf = cobra_lcdm.rbf_weights(params, n_basis_list=[12])
@@ -40,6 +44,16 @@ def test_weights_or_cosmo():
     gglin2 = cobra_lcdm.linear_galaxy_power_multipoles(cosmo = None, bias = bias, k_out_hfid = k_out_hfid, n_basis_list = [12], 
                                                        growth_rates = growth_rbf, weights = weights_rbf, 
                                                        resum = True, disps_hfid = disps_rbf)
+    
+    ggloop1 = cobra_lcdm.oneloop_galaxy_power_multipoles(params, bias_loop, k_out_hfid, n_basis_list = [12,12], resum = True)
+    ggloop2 = cobra_lcdm.oneloop_galaxy_power_multipoles(cosmo = None, bias = bias_loop, k_out_hfid = k_out_hfid, n_basis_list = [12,12], 
+                                                       growth_rates = growth_rbf, weights = weights_rbf, 
+                                                       resum = True, disps_hfid = disps_rbf)
+    
+    mmloop1 = cobra_lcdm.oneloop_matter_power(params, ctr, k_out_hfid, n_basis_list = [12,12], resum = True)
+    mmloop2 = cobra_lcdm.oneloop_matter_power(cosmo = None, ctr = ctr, k_out_hfid = k_out_hfid, n_basis_list = [12,12], weights = weights_rbf, 
+                                                       resum = True, disps_hfid = disps_rbf)
+    
 
     # GEN
     cobra_gen = CobraGEN(param_range = 'def')
@@ -67,6 +81,8 @@ def test_weights_or_cosmo():
     assert np.allclose(linpow3,linpow4, rtol = 1e-5)
     assert np.allclose(gglin1,gglin2, rtol = 1e-5)
     assert np.allclose(gglin3, gglin4, rtol = 1e-5)
+    assert np.allclose(ggloop1,ggloop2, rtol = 1e-5)
+    assert np.allclose(mmloop1,mmloop2, rtol = 1e-5)
     
 ## check: using disps directly or using cosmo within cobra range gives the same answer
 def test_disps_or_cosmo():
@@ -290,7 +306,7 @@ def test_projection_weights():
 
     wts_true = cobra_lcdm.rbf_weights(params, n_basis_list = [12])[0]
 
-    ## GEN
+    ## GEN, def 
 
     cobra_gen = CobraGEN(param_range = 'def')
     k_min_hfid = 0.001
@@ -305,8 +321,28 @@ def test_projection_weights():
     wts_project2 = cobra_gen.project_pk_into_basis(linpow_extrap, h = 0.7, n_basis_list = [16])[0]
 
     wts_true2 = cobra_gen.rbf_weights(params2, n_basis_list = [12])[0]
+    
+    ##  GEN, ext
+    
+    cobra_gen = CobraGEN(param_range = 'ext')
+    k_min_hfid = 0.001
+    k_max_hfid = 1.5
+    n_bins = 300
+    k_out_hfid = np.logspace(np.log10(k_min_hfid), np.log10(k_max_hfid), n_bins)
+    params3 = {'omch2':[0.10], 'ombh2':[0.021], 'Omk':[0.1], 'h': [0.7], 'ns':[0.97], 
+               'Mnu':[0.6], 'w0':[-1.1], 'wp':[-0.7], 'z':[0.5], 'As': [3]} ## need h = 0.7 for this test
+
+    linpow = cobra_gen.linear_matter_power(params3, k_out_hfid, n_basis_list = [16])
+    linpow_extrap = extrapolate_pk(np.array([k_out_hfid, linpow[0]]))
+    wts_project3 = cobra_gen.project_pk_into_basis(linpow_extrap, h = 0.7, n_basis_list = [16])[0]
+
+    wts_true3 = cobra_gen.rbf_weights(params3, n_basis_list = [12])[0]
+    
     assert np.allclose(wts_true[:4], wts_project[:4],rtol = 1e-2)
     assert np.allclose(wts_true2[:4], wts_project2[:4],rtol = 1e-2)
+    assert np.allclose(wts_true3[:4], wts_project3[:4],rtol = 1e-2)
+    
+    
     
 
 ## check: resum = False gives same answer as putting disps = 0

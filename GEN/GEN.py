@@ -60,10 +60,10 @@ class CobraGEN:
         self.bounds_6d = bounds_6d
 
         if param_range == 'def':
-            self.param_keys = ['omch2', 'ombh2', 'Omk', 'h', 'ns', 'Mnu', 'w0', 'wa', 'z', 'As']
+            self.cosmo_keys = ['omch2', 'ombh2', 'Omk', 'h', 'ns', 'Mnu', 'w0', 'wa', 'z', 'As']
 
         if param_range == 'ext':
-            self.param_keys = ['omch2', 'ombh2', 'Omk', 'h', 'ns', 'Mnu', 'w0', 'wp', 'z', 'As']
+            self.cosmo_keys = ['omch2', 'ombh2', 'Omk', 'h', 'ns', 'Mnu', 'w0', 'wp', 'z', 'As']
 
         self.bias_keys_lin = ['b1']
         
@@ -86,8 +86,8 @@ class CobraGEN:
             raise NBasisError("Can use at most 16 basis functions for this range")
 
         cosmo_keys_list = [key for key in cosmo.keys()]
-        if cosmo_keys_list != self.param_keys:
-            raise DimensionError(f"Please specify 10 parameters for every cosmology: {', '.join(self.param_keys)}")
+        if cosmo_keys_list != self.cosmo_keys:
+            raise DimensionError(f"Please specify 10 parameters for every cosmology: {', '.join(self.cosmo_keys)}")
         if self.param_range == 'def':
             alpha = 1
         elif self.param_range == 'ext':
@@ -190,10 +190,10 @@ class CobraGEN:
         if weights is None:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if self.param_range == 'def':
-                if cosmo_keys_list != self.param_keys:
+                if cosmo_keys_list != self.cosmo_keys:
                     raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wa, z, As")
             elif self.param_range == 'ext':
-                if cosmo_keys_list != self.param_keys:
+                if cosmo_keys_list != self.cosmo_keys:
                     raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wp, z, As")
                 
             cosm_tot = np.array([val for val in cosmo.values()]).T
@@ -300,10 +300,10 @@ class CobraGEN:
         else:
             cosmo_keys_list = [key for key in cosmo.keys()]
             if self.param_range == 'def':
-                if cosmo_keys_list != self.param_keys:
+                if cosmo_keys_list != self.cosmo_keys:
                     raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wa, z, As")
             elif self.param_range == 'ext':
-                if cosmo_keys_list != self.param_keys:
+                if cosmo_keys_list != self.cosmo_keys:
                     raise DimensionError("Please specify 10 parameters for every cosmology: omch2, ombh2, Omk, h, ns, Mnu, w0, wp, z, As")
                 
             cosm_tot = np.array([val for val in cosmo.values()]).T
