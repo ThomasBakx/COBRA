@@ -9,7 +9,7 @@ packages = ["cobra"]
 find = {}  
 
 [tool.setuptools.package_data]
-"cobra" = ["cobra/LCDM/RBFtables/def/*.dat","cobra/LCDM/RBFtables/ext/*.dat","cobra/LCDM/Stables/def/*.dat","cobra/LCDM/Stables/ext/*.dat","*.md"]  
+"cobra" = ["*.dat","*.md"]  
 
 [project]
 name="cobra"
