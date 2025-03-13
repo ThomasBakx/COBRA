@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import hyp2f1, poch, factorial, eval_hermite
 from numpy.polynomial import legendre 
+import pkg_resources
 
 def get_svd_results(space:str, param_range:str):
     
