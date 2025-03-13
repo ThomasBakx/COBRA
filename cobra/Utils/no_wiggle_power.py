@@ -2,6 +2,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.integrate import quad_vec
 from cobra.Utils.extrapolate_pk import extrapolate_pk
+import pkg_resources
 
 def no_wiggle_power(k_pk:np.ndarray): 
     
