@@ -18,6 +18,7 @@ authors=[{name="Thomas Bakx", email="t.j.m.bakx@uu.nl"},]
 description="Package accompanying ArXiv:2407.04660"
 readme="README.md"
 requires-python=">=3.7"
+dependencies = ["numpy", "scipy"]
 classifiers=["Programming Language :: Python :: 3","License :: OSI Approved :: MIT License", "Operating System :: OS Independent",]
 
 
