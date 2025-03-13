@@ -21,7 +21,8 @@ def no_wiggle_power(k_pk:np.ndarray):
 
     pk_log_spl = CubicSpline(np.log10(k_extrap), k_pk_extrap[1])
 
-    k_pk_eh = np.loadtxt("cobra/Utils/eh_spec.dat", unpack=True).T ## normalize by eisenstein/hu
+    eh_path = pkg_resources.resource_filename('cobra', "Utils/eh_spec.dat")
+    k_pk_eh = np.loadtxt(eh_path, unpack=True).T ## normalize by eisenstein/hu
 
     k_eh = k_pk_eh[0]
     pk_eh = k_pk_eh[1]
