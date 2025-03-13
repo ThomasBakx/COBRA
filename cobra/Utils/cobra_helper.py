@@ -8,11 +8,17 @@ def get_svd_results(space:str, param_range:str):
     Load results from svd into memory. All tables also contain the (same) k-range themselves in the 1st column.
     Returns tuple containing mean power spectrum template, orthonormal basis vj_hat, no-wiggle basis and v_j basis = vj_hat * pbar
     """
+    path_pbar = pkg_resources.resource_filename('cobra', space + "/Stables/" + param_range + "/pbar_" + space + param_range + ".dat")
+    k_pk_bar = np.loadtxt(path_pbar, unpack=True).T
     
-    k_pk_bar = np.loadtxt("cobra/" + space + "/Stables/" + param_range + "/pbar_" + space + param_range + ".dat", unpack=True).T
-    k_vj_hat = np.loadtxt("cobra/" + space + "/Stables/" + param_range + "/vjhat_" + space + param_range + ".dat", unpack=True).T
-    k_vj_nw = np.loadtxt("cobra/" + space + "/Stables/" + param_range + "/vj_nw_" + space + param_range + ".dat", unpack=True).T
-    k_vj = np.loadtxt("cobra/" + space + "/Stables/" + param_range + "/vj_" + space + param_range + ".dat", unpack=True).T
+    path_vjhat = pkg_resources.resource_filename('cobra', space + "/Stables/" + param_range + "/vjhat_" + space + param_range + ".dat")
+    k_vj_hat = np.loadtxt(path_vjhat, unpack=True).T
+    
+    path_vjnw = pkg_resources.resource_filename('cobra', space + "/Stables/" + param_range + "/vj_nw_" + space + param_range + ".dat")
+    k_vj_nw = np.loadtxt(path_vjnw, unpack=True).T
+    
+    path_vj = pkg_resources.resource_filename('cobra', space + "/Stables/" + param_range + "/vj_" + space + param_range + ".dat")
+    k_vj = np.loadtxt(path_vj, unpack=True).T
     
     return k_pk_bar, k_vj_hat, k_vj_nw, k_vj
 
@@ -26,17 +32,27 @@ def get_rbf_tables(space:str, param_range:str):
 
     if space == 'LCDM':
         
-        bmat_disp = np.array([np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_disp_" + space + param_range + ".dat", unpack=True)])
-        bmat_gr = np.array([np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_gr_" + space + param_range + ".dat", unpack=True)])
-        bmat_d = np.array([np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_d_" + space + param_range + ".dat", unpack=True)])
-        bmat_wts = np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_wts_" + space + param_range + ".dat", unpack=True).T
+        path_disp = pkg_resources.resource_filename('cobra', space + "/RBFtables/" + param_range + "/bmat_disp_" + space + param_range + ".dat")
+        bmat_disp = np.array([np.loadtxt(path_disp, unpack=True)])
+        
+        path_gr = pkg_resources.resource_filename('cobra', space + "/RBFtables/" + param_range + "/bmat_gr_" + space + param_range + ".dat")
+        bmat_gr = np.array([np.loadtxt(path_gr, unpack=True)])
+        
+        path_d = pkg_resources.resource_filename('cobra', space + "/RBFtables/" + param_range + "/bmat_d_" + space + param_range + ".dat")
+        bmat_d = np.array([np.loadtxt(path_d, unpack=True)])
+        
+        path_wts = pkg_resources.resource_filename('cobra',  space + "/RBFtables/" + param_range + "/bmat_wts_" + space + param_range + ".dat")
+        bmat_wts = np.loadtxt(path_wts, unpack=True).T
 
         return bmat_disp, bmat_gr, bmat_d, bmat_wts
 
     if space == 'GEN':
 
-        bmat_d = np.array([np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_d_" + space + param_range + ".dat", unpack=True)])
-        bmat_wts = np.loadtxt("cobra/" + space + "/RBFtables/" + param_range + "/bmat_wts_" + space + param_range + ".dat", unpack=True)
+        path_d = pkg_resources.resource_filename('cobra', space + "/RBFtables/" + param_range + "/bmat_d_" + space + param_range + ".dat")
+        bmat_d = np.array([np.loadtxt(path_d, unpack=True)])
+        
+        path_wts = pkg_resources.resource_filename('cobra', space + "/RBFtables/" + param_range + "/bmat_wts_" + space + param_range + ".dat")
+        bmat_wts = np.loadtxt(path_wts, unpack=True)
 
         return bmat_d, bmat_wts 
     
@@ -57,7 +73,8 @@ def get_loop_table(space:str, param_range:str, w_nw:str):
     else:
         raise ValueError(f'Unknown param_range {param_range}')
 
-    k_s_table_loop = np.loadtxt("cobra/" + space + "/Stables/" + param_range + "/gg1loop_" + w_nw + "_" + space + param_range + ".dat", unpack=True).T
+    path_loop = pkg_resources.resource_filename('cobra', space + "/Stables/" + param_range + "/gg1loop_" + w_nw + "_" + space + param_range + ".dat")
+    k_s_table_loop = np.loadtxt(path_loop, unpack=True).T
     k_loop = k_s_table_loop[0]
     nk = len(k_loop)
     nc = round(n_basis_max * (n_basis_max + 1) / 2)
