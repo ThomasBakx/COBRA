@@ -1,6 +1,10 @@
 # COBRA
 COBRA Repository for computing cosmological observables.
 
+Installation can be done via pip:
+
+pip install git+https://github.com/ThomasBakx/cobra
+
 Currently supports: (i) linear matter and galaxy power spectrum in LambdaCDM; (ii) linear matter and galaxy power spectrum in extended parameter space including curvature, neutrinos, $w_0$, $w_a$; (iii) one-loop EPT resummed power spectrum of biased tracers in redshift space for LambdaCDM based on Chen, Vlah, White: https://arxiv.org/pdf/2005.00523, https://arxiv.org/abs/2012.04636 (iv) one-loop matter power spectrum in LambdaCDM.
 
 By default, the code uses units of $(h*)/\text{Mpc}$ for wavenumbers, where $h* = 0.7$ throughout. This means that you also get the power spectra in units of $(\text{Mpc}/h*)^3$. The allowed ranges are given in units of $(h*)/\text{Mpc}$ and are $[0.0008,4]$ for (i), $[0.001,1.5]$ for (ii) and $[0.001,0.5]$ for (iii).   
