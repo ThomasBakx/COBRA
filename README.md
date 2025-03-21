@@ -1,4 +1,6 @@
 # COBRA
+![cobra_image](https://github.com/user-attachments/assets/e091fbdd-6722-409e-aeba-26108eda7de2)
+
 COBRA Repository for computing cosmological observables.
 
 Installation can be done via pip:
